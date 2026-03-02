@@ -1,0 +1,15 @@
+{
+    "action": "ACTIVATE_LIVE_WEBHOOK",
+    "config": {
+        "local_port": 5000,
+        "public_url": "https://[your-custom-subdomain].ngrok-free.app",
+        "verification_token": "MY_SECRET_WHATSAPP_TOKEN"
+    },
+    "instructions": [
+        "1. Run: ngrok http 5000 --domain=[your-custom-subdomain].ngrok-free.app",
+        "2. Go to Meta Developer Dashboard -> WhatsApp -> Configuration -> Edit Webhook",
+        "3. Enter the public_url + '/webhook'",
+        "4. Enter the verification_token: 'MY_SECRET_WHATSAPP_TOKEN'",
+        "5. Click Verify and Save."
+    ]
+}
