@@ -30,9 +30,35 @@ st.set_page_config(
 )
 
 # ==============================================================================
-# ADMIN-ONLY AUTHENTICATION
+# ADMIN-ONLY AUTHENTICATION & NOTIFICATIONS
 # ==============================================================================
 ADMIN_EMAIL = "demo.client@example.com" # Specific authorized Google email
+
+def broadcast_to_admin_channel(payload):
+    """
+    Mock integration for sending high-priority alerts to the Admin via WhatsApp/Slack.
+    """
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.warning(f"🔔 [ADMIN BROADCAST]: {payload['title']} | {payload['message']}")
+    return True
+
+def trigger_admin_gold_alert(client_data, site_preview_url):
+    """
+    Sends a high-priority alert to the Admin when a website is claimed. 
+    """
+    alert_payload = {
+        "priority": "GOLD",
+        "title": "🚨 HIGH-TICKET ALERT: Website Claimed",
+        "message": f"Client {client_data.get('name', 'A Client')} has approved their AI storefront.",
+        "meta": {
+            "niche": client_data.get('primary_category', 'Business'),
+            "location": client_data.get('city', 'Unknown'),
+            "preview": site_preview_url
+        }
+    }
+    # This triggers your internal WhatsApp/Notification API
+    return broadcast_to_admin_channel(alert_payload)
 
 st.markdown("""
 <style>

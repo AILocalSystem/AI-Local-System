@@ -12,6 +12,11 @@ except ImportError:
 
 from token_manager import get_authenticated_service, get_client_email
 from public_audit import get_public_audit
+from web_architect import WebArchitect, lock_visionary_vault
+import sys
+# Allow importing from pages folder
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from pages.admin_master import trigger_admin_gold_alert
 import csv
 from datetime import datetime
 
@@ -439,30 +444,69 @@ if st.session_state.phase == 'PUBLIC_AUDIT':
         </div>
         """, unsafe_allow_html=True)
         
-        # Using custom HTML for the large royal blue button to match requirements
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # --- The Web Architect Staging Preview ---
+        st.markdown("<h3 style='text-align: center; margin-top: 20px; color: #3B82F6;'>✨ Your Sovereign OS Website Preview</h3>", unsafe_allow_html=True)
+        st.caption("<p style='text-align: center;'>We've automatically generated a high-converting website draft based on your profile gaps.</p>", unsafe_allow_html=True)
+        
+        # Horizontal Site Map Slider
         st.markdown("""
-            <style>
-            div.stButton#auth_btn > button:first-child {
-                background-color: #3B82F6;
-                color: white;
-                height: 3.5em;
-                font-size: 22px;
-                font-weight: bold;
-                border: none;
-                border-radius: 8px;
-                box-shadow: 0 4px 6px rgba(59, 130, 246, 0.5);
-                transition: all 0.3s ease;
-            }
-            div.stButton#auth_btn > button:first-child:hover {
-                background-color: #2563EB;
-                box-shadow: 0 6px 8px rgba(37, 99, 235, 0.6);
-                transform: translateY(-2px);
-            }
-            </style>
+        <style>
+        /* Hide standard radio button circles */
+        div.row-widget.stRadio > div{flex-direction:row;justify-content:center;}
+        div.row-widget.stRadio > div > label > div:first-child{display:none;}
+        /* Style the labels as custom tabs */
+        div.row-widget.stRadio > div > label{
+            background-color: #F1F5F9; 
+            padding: 8px 16px; 
+            border-radius: 20px; 
+            cursor: pointer;
+            margin: 0 5px;
+            border: 1px solid #CBD5E1;
+            font-weight: 500;
+            color: #475569;
+        }
+        div.row-widget.stRadio > div > label[data-baseweb="radio"]:has(input:checked){
+            background-color: #3B82F6;
+            color: white;
+            border-color: #3B82F6;
+        }
+        </style>
         """, unsafe_allow_html=True)
         
-        # Use key to target the specific button in CSS (streamlit generates standard classes, so we wrap it conceptually)
-        if st.button("Authorize AI to Implement These Fixes Now", key="auth_btn", use_container_width=True):
+        if 'wa_active_tab' not in st.session_state:
+            st.session_state.wa_active_tab = "Home"
+            
+        selected_page = st.radio("Navigate Preview", ["Home", "Services", "About", "Contact"], label_visibility="collapsed", horizontal=True, index=["Home", "Services", "About", "Contact"].index(st.session_state.wa_active_tab))
+        st.session_state.wa_active_tab = selected_page
+        
+        with st.spinner(f"Compiling {selected_page} Assets..."):
+             engine = WebArchitect(data)
+             preview_html = engine.generate_html_preview(page_type=selected_page)
+             
+        # Render the scrollable component
+        st.components.v1.html(preview_html, height=520, scrolling=True)
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # Sticky CTA Authorize Button
+        if st.button("🚀 Claim This Website & Authorize Full Repair", use_container_width=True, type="primary"):
+            with st.spinner("Freezing Visionary Blueprint..."):
+                # Pass mocked AI manifest as an example
+                manifest = {
+                    "Home_Hero": "professional wide shot of [PRIMARY_SERVICE]",
+                    "About_Team": "professional portrait of team",
+                    "Services_Thumbs": "tools and equipment in action"
+                }
+                lock_visionary_vault(data, manifest)
+                time.sleep(1) # Visual pacing
+                
+            with st.spinner("Notifying Sovereign Network..."):
+                preview_url = f"https://www.{data.get('name', 'Client').replace(' ', '').lower()}{data.get('city', 'City').replace(' ', '').lower()}.com/staging"
+                trigger_admin_gold_alert(data, preview_url)
+                time.sleep(1) # Visual pacing
+                
             st.session_state.phase = 'AUTH'
             st.rerun()
             
